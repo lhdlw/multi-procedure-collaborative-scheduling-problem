@@ -1,0 +1,25 @@
+# 编译生成的 PDF（可从 .tex 重新生成，不纳入版本管理）
+*.pdf
+
+# LaTeX 编译产生的辅助文件（自动生成，不需要版本管理）
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.bbl
+*.blg
+*.dvi
+*.idx
+*.ind
+*.ilg
+*.nav
+*.snm
+*.vrb
+*.bcf
+*.run.xml
