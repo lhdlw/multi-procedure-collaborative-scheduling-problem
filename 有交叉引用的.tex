@@ -160,10 +160,10 @@ $E_{ik}$ & 变量 & 工序 $i$ 中第 $k$ 类设备的释放（完成）时刻 \
 $x_{ikm}$ & 0-1 变量 & 工序 $i$ 的第 $k$ 类需求是否选用具体设备 $m$ \\
 $y_{ikn}$ & 0-1 变量 & 工序 $i$ 对第 $k$ 类设备是否投入 $n$ 台 \\
 $z_{ijm}$ & 0-1 变量 & 设备 $m$ 是否由任务 $i$ 直接转移至任务 $j$ \\
-$c_r$ & 参数 & 第 $r$ 类设备的单价（元/台） \\
-$z_{rg}$ & 整数变量 & 班组 $g$ 购买第 $r$ 类设备的台数 \\
-$N_r^0,\ N_r$ & 参数 & 购置前、购置后第 $r$ 类设备的总台数 \\
-$L_r$ & 参数 & 第 $r$ 类设备在全部工序上的理论负荷（台$\cdot$s） \\
+$c_k$ & 参数 & 第 $k$ 类设备的单价（元/台） \\
+$z_{kg}$ & 整数变量 & 班组 $g$ 购买第 $k$ 类设备的台数 \\
+$N_k^0,\ N_k$ & 参数 & 购置前、购置后第 $k$ 类设备的总台数 \\
+$L_k$ & 参数 & 第 $k$ 类设备在全部工序上的理论负荷（台$\cdot$s） \\
 $C_{\max}$ & 变量 & 全部任务的最晚完工时刻（总工期） \\
 \bottomrule
 \end{tabular}
@@ -771,7 +771,7 @@ CP-SAT 精确模型 & 73575 & OPTIMAL & 可证明全局最优 \\
 
 \subsubsection{购置变量与预算约束}
 
-设 $c_r$ 为第 $r$ 类设备单价，$z_{rg}$ 为班组 $g$ 购买第 $r$ 类设备的台数，$N_r^0$ 为问题三中两班组已有的第 $r$ 类设备总数。各类设备单价见表 \ref{tab:p4price}。
+设 $c_k$ 为第 $k$ 类设备单价，$z_{kg}$ 为班组 $g$ 购买第 $k$ 类设备的台数，$N_k^0$ 为问题三中两班组已有的第 $k$ 类设备总数。各类设备单价见表 \ref{tab:p4price}。
 
 \begin{table}[H]
 \centering
@@ -780,7 +780,7 @@ CP-SAT 精确模型 & 73575 & OPTIMAL & 可证明全局最优 \\
 \label{tab:p4price}
 \begin{tabular}{lccc}
 \toprule
-设备类型 & 单价 $c_r$/元 & 原有台数 $N_r^0$ \\
+设备类型 & 单价 $c_k$/元 & 原有台数 $N_k^0$ \\
 \midrule
 自动化输送臂 & 50000 & 8 \\
 工业清洗机 & 40000 & 10 \\
@@ -793,30 +793,30 @@ CP-SAT 精确模型 & 73575 & OPTIMAL & 可证明全局最优 \\
 
 购置须满足预算约束
 \begin{equation}
-\sum_{r\in R}\sum_{g=1}^{2} c_r z_{rg}\le 500000,\qquad z_{rg}\in\mathbb{Z}_+ .
+\sum_{k\in K}\sum_{g=1}^{2} c_k z_{kg}\le 500000,\qquad z_{kg}\in\mathbb{Z}_+ .
 \label{eq:p4budget}
 \end{equation}
-购置后第 $r$ 类设备总量为
+购置后第 $k$ 类设备总量为
 \begin{equation}
-N_r=N_r^0+\sum_{g=1}^{2} z_{rg} .
+N_k=N_k^0+\sum_{g=1}^{2} z_{kg} .
 \end{equation}
 新购设备在购置时可自由指定所属班组，而班组归属只影响首项任务的出发距离，故可先把新设备视为“班组待定”设备，在其首项任务确定后归入到该首个车间初始运输时间更短的班组。这一变换不改变可行域，却能显著减少班组分配造成的对称解。
 
 \subsubsection{设备台数选择与具体指派}
 
-定义 $y_{irn}=1$ 表示工序 $i$ 对第 $r$ 类设备投入 $n$ 台，$x_{irm}=1$ 表示工序 $i$ 的第 $r$ 类需求选用具体设备 $m$。每个设备需求只能选择一个投入台数，且具体设备数量须与台数选择一致：
+定义 $y_{ikn}=1$ 表示工序 $i$ 对第 $k$ 类设备投入 $n$ 台，$x_{ikm}=1$ 表示工序 $i$ 的第 $k$ 类需求选用具体设备 $m$。每个设备需求只能选择一个投入台数，且具体设备数量须与台数选择一致：
 \begin{align}
-&\sum_{n=1}^{N_r} y_{irn}=1, && \forall i\in I,\ r\in R_i,\\
-&\sum_{m\in M_r} x_{irm}=\sum_{n=1}^{N_r} n\,y_{irn}, && \forall i\in I,\ r\in R_i,\\
-&p_{ir}=\sum_{n=1}^{N_r} p_{ir}(n)\,y_{irn},
+&\sum_{n=1}^{N_k} y_{ikn}=1, && \forall i\in I,\ k\in R_i,\\
+&\sum_{m\in M_k} x_{ikm}=\sum_{n=1}^{N_k} n\,y_{ikn}, && \forall i\in I,\ k\in R_i,\\
+&p_{ik}=\sum_{n=1}^{N_k} p_{ik}(n)\,y_{ikn},
 \end{align}
-其中 $p_{ir}(n)=\left\lceil 3600 q_i/(v_{ir}n)\right\rceil$ 为投入 $n$ 台时的整数秒持续时间，已按式 (2) 预先计算，从而避免非线性除法直接进入求解器。
+其中 $p_{ik}(n)=\left\lceil 3600 Q_i/(v_{ik}n)\right\rceil$ 为投入 $n$ 台时的整数秒持续时间，已按式 (2) 预先计算，从而避免非线性除法直接进入求解器。
 
 \subsubsection{工序先后与同步完成约束}
 
-同一工序所需的不同设备类型共享开始变量 $S_i$，第 $r$ 类设备的释放时刻为 $E_{ir}=S_i+p_{ir}$，工序完成时刻取各类型释放时刻的最大值：
+同一工序所需的不同设备类型共享开始变量 $S_i$，第 $k$ 类设备的释放时刻为 $E_{ik}=S_i+p_{ik}$，工序完成时刻取各类型释放时刻的最大值：
 \begin{equation}
-C_i=\max_{r\in R_i}\{E_{ir}\}.
+C_i=\max_{k\in R_i}\{E_{ik}\}.
 \end{equation}
 若 $j$ 为 $i$ 在同一车间的直接后继，则
 \begin{equation}
@@ -825,9 +825,9 @@ S_j\ge C_i .
 
 \subsubsection{设备访问路径与运输约束}
 
-对每台具体设备 $m$ 建立含虚拟仓库节点 0 的有向访问回路，令 $a_{mij}=1$ 表示设备 $m$ 完成任务节点 $i$ 后紧接着服务节点 $j$，$f_{mi}=1$ 表示 $i$ 为设备 $m$ 的第一项任务。回路流入、流出度与 $x_{irm}$ 联立，未选任务节点以自环跳过，已选节点恰有一条进入弧与一条离开弧。相邻任务间的时间约束为
+对每台具体设备 $m$ 建立含虚拟仓库节点 0 的有向访问回路，令 $a_{mij}=1$ 表示设备 $m$ 完成任务节点 $i$ 后紧接着服务节点 $j$，$f_{mi}=1$ 表示 $i$ 为设备 $m$ 的第一项任务。回路流入、流出度与 $x_{ikm}$ 联立，未选任务节点以自环跳过，已选节点恰有一条进入弧与一条离开弧。相邻任务间的时间约束为
 \begin{equation}
-a_{mij}=1\ \Rightarrow\ S_j\ge E_{ir}+\tau_{w(i),w(j)},
+a_{mij}=1\ \Rightarrow\ S_j\ge E_{ik}+\tau_{w(i),w(j)},
 \end{equation}
 首项任务的首次运输约束为
 \begin{equation}
@@ -842,7 +842,7 @@ f_{mi}=1\ \Rightarrow\ S_i\ge \tau^{0}_{g(m),w(i)} .
 \end{equation}
 主目标达到全局最优后固定 $C_{\max}$，再最小化购置费用
 \begin{equation}
-\min\ \sum_{r}\sum_{g} c_r z_{rg},
+\min\ \sum_{r}\sum_{g} c_k z_{kg},
 \end{equation}
 最后固定前两层最优值，以 $\sum_i C_i$ 最小为排程紧凑化目标。由此形成“最短总工期—最低购置费用—非关键工序紧凑化”的词典序优化。
 
@@ -852,14 +852,14 @@ f_{mi}=1\ \Rightarrow\ S_i\ge \tau^{0}_{g(m),w(i)} .
 
 \subsubsection{设备负荷下界与瓶颈识别}
 
-对设备类型 $r$，将其在全部工序上的理论设备工时累加，记为
+对设备类型 $k$，将其在全部工序上的理论设备工时累加，记为
 \begin{equation}
-L_r=\sum_{i\in I}\frac{3600\,q_i}{v_{ir}} .
+L_k=\sum_{i\in I}\frac{3600\,Q_i}{v_{ik}} .
 \label{eq:p4loaddef}
 \end{equation}
-若购置后共有 $N_r$ 台该类设备，则任何调度均满足资源负荷下界
+若购置后共有 $N_k$ 台该类设备，则任何调度均满足资源负荷下界
 \begin{equation}
-C_{\max}\ge \left\lceil\frac{L_r}{N_r}\right\rceil .
+C_{\max}\ge \left\lceil\frac{L_k}{N_k}\right\rceil .
 \label{eq:p4load}
 \end{equation}
 计算可知，高速抛光机的全部作业负荷为 $135000$ 台·秒，自动传感多功能机负荷为 $117360$ 台·秒，而问题三中两类设备均仅有 2 台，明显构成主导瓶颈。按单位费用带来的负荷下界改善幅度，初步购置结构集中于新增传感机与抛光机，并利用剩余预算补充精密灌装机。
@@ -870,10 +870,10 @@ C_{\max}\ge \left\lceil\frac{L_r}{N_r}\right\rceil .
 
 对第一轮筛选后仍可能优于当前上界的结构，建立累积资源松弛模型：保留车间工序链、可变投入台数与同型设备累计容量，但忽略具体设备编号、设备访问路径与跨车间运输。由于该模型删除了原问题的部分约束，其最优值必不大于原问题最优值，可作为严格下界：
 \begin{equation}
-\sum_{i\in A_r(t)} n_{ir}\le N_r,\qquad \forall r,t .
+\sum_{i\in A_k(t)} n_{ik}\le N_k,\qquad \forall k,t .
 \label{eq:p4relax}
 \end{equation}
-其中 $A_r(t)$ 为时刻 $t$ 正在占用第 $r$ 类设备的工序集合。只要某购置结构的松弛下界不小于已知可行解上界 $32058$ s，该结构及其所有被支配结构均不可能产生更优方案。各预算极大竞争结构的松弛下界见表 \ref{tab:p4lb}。
+其中 $A_k(t)$ 为时刻 $t$ 正在占用第 $k$ 类设备的工序集合。只要某购置结构的松弛下界不小于已知可行解上界 $32058$ s，该结构及其所有被支配结构均不可能产生更优方案。各预算极大竞争结构的松弛下界见表 \ref{tab:p4lb}。
 
 \begin{table}[H]
 \centering
