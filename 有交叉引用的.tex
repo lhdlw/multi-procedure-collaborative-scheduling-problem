@@ -154,11 +154,11 @@ $\tau_{ab}$ & 参数 & 设备从位置 $a$ 转移到位置 $b$ 的运输时间�
 $\tau^{0}_{g,w}$ & 参数 & 设备从班组 $g$ 驻地首次运至车间 $w$ 的时间（s） \\
 $w(i)$ & 参数 & 工序 $i$ 所属车间 \\
 $g(m)$ & 参数 & 设备 $m$ 所属班组 \\
-$m_{ik}$ & 变量 & 工序 $i$ 投入的第 $k$ 类设备台数 \\
+$n_{ik}$ & 变量 & 工序 $i$ 投入的第 $k$ 类设备台数 \\
 $S_i,\ C_i$ & 变量 & 工序 $i$ 的开始时刻、整体完成时刻 \\
 $E_{ik}$ & 变量 & 工序 $i$ 中第 $k$ 类设备的释放（完成）时刻 \\
 $x_{ikm}$ & 0-1 变量 & 工序 $i$ 的第 $k$ 类需求是否选用具体设备 $m$ \\
-$y_{ikr}$ & 0-1 变量 & 工序 $i$ 对第 $k$ 类设备是否投入 $r$ 台 \\
+$y_{ikn}$ & 0-1 变量 & 工序 $i$ 对第 $k$ 类设备是否投入 $n$ 台 \\
 $z_{ijm}$ & 0-1 变量 & 设备 $m$ 是否由任务 $i$ 直接转移至任务 $j$ \\
 $c_r$ & 参数 & 第 $r$ 类设备的单价（元/台） \\
 $z_{rg}$ & 整数变量 & 班组 $g$ 购买第 $r$ 类设备的台数 \\
@@ -282,9 +282,9 @@ E & 700 & 360 & 425 & 515 & 0 \\
 
 \subsection{同型设备并联持续时间}
 
-设工序 $i$ 的工程量为 $Q_i$，第 $k$ 类设备单机效率为 $v_{ik}$。若投入 $r$ 台同型设备并等量均分工程量，则每台设备承担 $Q_i/r$，该类型的持续工作时间为
+设工序 $i$ 的工程量为 $Q_i$，第 $k$ 类设备单机效率为 $v_{ik}$。若投入 $n$ 台同型设备并等量均分工程量，则每台设备承担 $Q_i/n$，该类型的持续工作时间为
 \begin{equation}
-p_{ikr}=\left\lceil\frac{3600\,Q_i}{r\,v_{ik}}\right\rceil,\qquad r=1,2,\dots,|M_k|.
+p_{ikn}=\left\lceil\frac{3600\,Q_i}{n\,v_{ik}}\right\rceil,\qquad n=1,2,\dots,|M_k|.
 \end{equation}
 式 (2) 将“设备投入台数”与“工序持续时间”建立离散映射，使模型能够在“集中多机缩短单道工序”与“分散设备保障多车间并行”之间自动权衡。
 
@@ -302,21 +302,21 @@ p_{ikr}=\left\lceil\frac{3600\,Q_i}{r\,v_{ik}}\right\rceil,\qquad r=1,2,\dots,|M
 
 \subsubsection{同型多机并联模型}
 
-对工序 $i$ 所需设备类型 $k$，若投入 $m_{ik}$ 台性能相同的设备，则各设备承担的工程量满足总量守恒
+对工序 $i$ 所需的第 $k$ 类设备，设投入 $n_{ik}$ 台同型设备，第 $j$ 台承担工程量 $q_{ikj}$，则各设备承担的工程量满足总量守恒
 \begin{equation}
-\sum_{j=1}^{m_{ik}} q_{ikj}=Q_i,\qquad 1\le m_{ik}\le n_k .
+\sum_{j=1}^{n_{ik}} q_{ikj}=Q_i,\qquad 1\le n_{ik}\le n_k .
 \end{equation}
 第 $j$ 台设备完成其分配工程量所需的工作时间为
 \begin{equation}
 p_{ikj}=\left\lceil\frac{q_{ikj}}{v_{ik}}\times 3600\right\rceil .
 \end{equation}
-由于同型设备效率相同，为最小化该类型设备的最晚完成时间，应将工程量均匀分配，即 $q_{ikj}=Q_i/m_{ik}$，于是该类型完成工序 $i$ 的最短时间为
+由于同型设备效率相同，为使该类型设备的最晚完成时间最小，应将工程量均匀分配，即 $q_{ikj}=Q_i/n_{ik}$，于是该类型完成工序 $i$ 的最短时间为
 \begin{equation}
-p_{ik}(m_{ik})=\left\lceil\frac{3600\,Q_i}{m_{ik}\,v_{ik}}\right\rceil .
+p_{ik}(n_{ik})=\left\lceil\frac{3600\,Q_i}{n_{ik}\,v_{ik}}\right\rceil .
 \end{equation}
-当工序同时需要多种设备类型时，每类设备均须完成 $Q_i$，故工序持续时间由最慢的设备类型决定：
+当工序同时需要多种设备类型时，每类设备均须独立完成 $Q_i$，故工序持续时间由最慢的设备类型决定：
 \begin{equation}
-p_i=\max_{k\in R_i}\bigl\{p_{ik}(m_{ik})\bigr\}.
+p_i=\max_{k\in R_i}\bigl\{p_{ik}(n_{ik})\bigr\}.
 \end{equation}
 
 \subsubsection{工序先后关系与目标函数}
@@ -331,7 +331,7 @@ S_{A1}\ge\tau_{1A},\qquad S_{A2}\ge C_{A1},\qquad S_{A3}\ge C_{A2},\qquad C_i=S_
 
 \subsection{问题一模型求解}
 
-由于 A1、A2、A3 使用的设备类型互不重叠，对任一工序增加同型设备投入不会与其他工序形成资源竞争，故在不设置设备启用成本的情况下，投入全部可用同型设备即可使各类型设备的完成时间最小；随后令每道工序在其前序工序完成后立即开始，即可得到最早开始调度。图 \ref{fig:p1flow} 给出求解流程。
+问题一是问题二在单车间、无跨车间资源竞争情形下的退化特例。由于 A1、A2、A3 使用的设备类型互不重叠，对任一工序增加同型设备投入不会与其他工序形成资源竞争，故在不设置设备启用成本的情况下，投入全部可用同型设备即可使各类型设备的完成时间最小；随后令每道工序在其前序工序完成后立即开始，即可得到最早开始调度。图 \ref{fig:p1flow} 给出求解流程。
 
 \begin{figure}[H]
 \centering
@@ -416,11 +416,11 @@ C_{\max}^{*(1)}=37280\ \text{s}=10:21:20 .
 
 \subsubsection{设备投入数量与具体设备分配}
 
-用 0-1 变量 $y_{ikr}$ 表示工序 $i$ 对第 $k$ 类设备是否选择投入 $r$ 台，用 $x_{ikm}$ 表示是否选用具体设备 $m$，二者通过设备数量等式相连：
+用 0-1 变量 $y_{ikn}$ 表示工序 $i$ 对第 $k$ 类设备是否选择投入 $n$ 台，用 $x_{ikm}$ 表示是否选用具体设备 $m$，二者通过设备数量等式相连：
 \begin{align}
-&\sum_{r} y_{ikr}=1, && \forall i\in I,\ k\in R_i,\\
-&\sum_{m\in M_k} x_{ikm}=\sum_{r} r\,y_{ikr}, && \forall i\in I,\ k\in R_i,\\
-&p_{ik}=\sum_{r} p_{ikr}\,y_{ikr}.
+&\sum_{n} y_{ikn}=1, && \forall i\in I,\ k\in R_i,\\
+&\sum_{m\in M_k} x_{ikm}=\sum_{n} n\,y_{ikn}, && \forall i\in I,\ k\in R_i,\\
+&p_{ik}=\sum_{n} p_{ikn}\,y_{ikn}.
 \end{align}
 式 (12) 保证每类设备只选一个投入档位，式 (13) 将投入台数落实为具体设备编号，式 (14) 将离散设备数量选择映射为对应持续时间。
 
@@ -588,9 +588,9 @@ E & E3 & 自动传感多功能机$\times$1、工业清洗机$\times$3 & 02:47:17
 \subsubsection{设备投入规模与具体设备分配}
 
 \begin{align}
-&\sum_{r} y_{ikr}=1, && \forall i\in I,\ k\in R_i,\\
-&\sum_{m\in M_k} x_{ikm}=\sum_{r} r\,y_{ikr}, && \forall i\in I,\ k\in R_i,\\
-&p_{ik}=\sum_{r} p_{ikr}\,y_{ikr}.
+&\sum_{n} y_{ikn}=1, && \forall i\in I,\ k\in R_i,\\
+&\sum_{m\in M_k} x_{ikm}=\sum_{n} n\,y_{ikn}, && \forall i\in I,\ k\in R_i,\\
+&p_{ik}=\sum_{n} p_{ikn}\,y_{ikn}.
 \end{align}
 班组编号已包含在具体设备 $m$ 中，因此同一工序既可只用一个班组，也可由两个班组的同型设备共同完成。
 
