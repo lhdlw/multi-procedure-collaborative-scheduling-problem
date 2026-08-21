@@ -1062,7 +1062,8 @@ Kirkpatrick S, Gelatt C D, Vecchi M P. Optimization by simulated annealing. \tex
   \item \texttt{问题2\_最优调度.py}：问题二 CP-SAT 精确求解，输出 144880 s；辅以 \texttt{问题2\_模拟退火交叉验证.py}。
   \item \texttt{问题3\_最优调度.py}：问题三双班组 CP-SAT 精确求解，输出 73575 s；辅以 \texttt{问题3\_模拟退火交叉验证.py}。
   \item \texttt{问题4\_预算约束下最优购置与调度.py}：问题四购置—调度联合 CP-SAT 精确求解，输出 32058 s；\texttt{问题4\_全局最优分解求解.py}：购置结构分解与全局最优性证明；\texttt{问题4\_关键路径法独立交叉验证.py}：独立交叉验证。
-  \item 结果表分别对应 \texttt{问题2\_最优设备调度方案.csv}、\texttt{问题3\_最优设备调度方案.csv}、\texttt{表3\_问题3结果.csv}、\texttt{表4\_问题4结果.csv} 及 \texttt{表5\_问题4设备购买情况.csv}。
+  \item 结果表对应 \texttt{问题2\_最优设备调度方案.csv}、\texttt{问题3\_最优设备调度方案.csv}，\newline
+        \texttt{表3\_问题3结果.csv}、\texttt{表4\_问题4结果.csv} 及 \texttt{表5\_问题4设备购买情况.csv}。
 \end{itemize}
 
 以问题一为例，其核心求解逻辑为：对每道工序的每种所需设备类型，投入全部可用同型设备并等量均分工程量，取同一工序内各设备类型持续时间的最大值为工序持续时间，再沿 A1$\to$A2$\to$A3 串接最早开始时刻，即可得到并证明全局最优解。
