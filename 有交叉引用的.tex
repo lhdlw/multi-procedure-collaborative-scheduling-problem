@@ -149,7 +149,7 @@ $Q_i$ & 参数 & 工序 $i$ 的工程量（m$^3$） \\
 $v_{ik}$ & 参数 & 第 $k$ 类单台设备执行工序 $i$ 的作业效率（m$^3$/h） \\
 $n_k$ & 参数 & 班组1（或单班组）拥有的第 $k$ 类设备台数 \\
 $d_{ab}$ & 参数 & 位置 $a$ 与位置 $b$ 之间的运输距离（m） \\
-$v_m$ & 参数 & 设备移动速度，恒为 $2$ m/s \\
+$s$ & 参数 & 设备移动速度，恒为 $2$ m/s \\
 $\tau_{ab}$ & 参数 & 设备从位置 $a$ 转移到位置 $b$ 的运输时间（s） \\
 $\tau^{0}_{g,w}$ & 参数 & 设备从班组 $g$ 驻地首次运至车间 $w$ 的时间（s） \\
 $w(i)$ & 参数 & 工序 $i$ 所属车间 \\
@@ -245,9 +245,9 @@ D1\to\cdots\to D6,\qquad E1\to E2\to E3 .
 
 \subsection{运输时间换算}
 
-设设备移动速度为 $v_m=2$ m/s，则设备从位置 $a$ 到位置 $b$ 的运输时间向上取整为
+设设备移动速度为 $s=2$ m/s，则设备从位置 $a$ 到位置 $b$ 的运输时间向上取整为
 \begin{equation}
-\tau_{ab}=\left\lceil \frac{d_{ab}}{v_m}\right\rceil,\qquad v_m=2\ \text{m/s}.
+\tau_{ab}=\left\lceil \frac{d_{ab}}{s}\right\rceil,\qquad s=2\ \text{m/s}.
 \end{equation}
 当设备连续执行同一车间的两项任务时 $a=b$，令 $\tau_{ab}=0$；首次出发使用班组驻地到目标车间的初始距离，之后使用车间间距离。据此可得运输时间表。
 
@@ -296,7 +296,7 @@ p_{ikr}=\left\lceil\frac{3600\,Q_i}{r\,v_{ik}}\right\rceil,\qquad r=1,2,\dots,|M
 
 班组1 驻地到 A 车间的距离为 $d_{1A}=400$ m，故初始运输时间为
 \begin{equation}
-\tau_{1A}=\left\lceil\frac{d_{1A}}{v_m}\right\rceil=\left\lceil\frac{400}{2}\right\rceil=200\ \text{s}.
+\tau_{1A}=\left\lceil\frac{d_{1A}}{s}\right\rceil=\left\lceil\frac{400}{2}\right\rceil=200\ \text{s}.
 \end{equation}
 即全部设备于 00:00:00 同时出发，最早于 00:03:20 到达 A 车间，A1 的实际开始时间不得早于 200 s。
 
