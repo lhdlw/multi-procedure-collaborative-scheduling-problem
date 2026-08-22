@@ -628,7 +628,7 @@ C_{\max}=\max\{C_{A3},C_{B4},C_{C5\text{-}3},C_{D6},C_{E3}\},
 \begin{equation}
 \min\ C_{\max}.
 \end{equation}
-主目标取得严格最优后，固定 $C_{\max}$，再最小化全部工序完成时刻之和以紧凑化排程，次级目标不改变最短总工期。
+采用分层优化思路：优先最小化项目总工期，固定 $C_{\max}$（即5项最终工序里最晚的完工时刻）；在总工期已经达到最短的前提下，再进一步压缩所有工序完工时刻之和，优化排班紧凑度。
 
 \subsection{问题三模型求解}
 
@@ -810,7 +810,7 @@ N_k=N_k^0+\sum_{g=1}^{2} z_{kg} .
 &\sum_{m\in M_k} x_{ikm}=\sum_{n=1}^{N_k} n\,y_{ikn}, && \forall i\in I,\ k\in R_i,\\
 &p_{ik}=\sum_{n=1}^{N_k} p_{ik}(n)\,y_{ikn},
 \end{align}
-其中 $p_{ik}(n)=\left\lceil 3600 Q_i/(v_{ik}n)\right\rceil$ 为投入 $n$ 台时的整数秒持续时间，已按式 (2) 预先计算，从而避免非线性除法直接进入求解器。
+其中 $p_{ik}(n)=\left\lceil 3600 Q_i/(v_{ik}n)\right\rceil$ 为投入 $n$ 台时的整数秒持续时间，已按式 (2) 预先计算。
 
 \subsubsection{工序先后与同步完成约束}
 
@@ -834,7 +834,7 @@ a_{mij}=1\ \Rightarrow\ S_j\ge E_{ik}+\tau_{w(i),w(j)},
 f_{mi}=1\ \Rightarrow\ S_i\ge \tau^{0}_{g(m),w(i)} .
 \end{equation}
 
-\subsubsection{目标函数（词典序优化）}
+\subsubsection{目标函数}
 
 第一层主目标为最小化五个车间末道工序完成时刻的最大值：
 \begin{equation}
@@ -844,7 +844,7 @@ f_{mi}=1\ \Rightarrow\ S_i\ge \tau^{0}_{g(m),w(i)} .
 \begin{equation}
 \min\ \sum_{r}\sum_{g} c_k z_{kg},
 \end{equation}
-最后固定前两层最优值，以 $\sum_i C_i$ 最小为排程紧凑化目标。由此形成“最短总工期—最低购置费用—非关键工序紧凑化”的词典序优化。
+最后固定前两层最优值，以 $\sum_i C_i$ 最小为排程紧凑化目标。由此形成“最短总工期—最低购置费用—非关键工序紧凑化”的优化。
 
 \subsection{问题四模型求解：分解算法与全局最优性证明}
 
